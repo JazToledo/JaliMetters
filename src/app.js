@@ -1,44 +1,31 @@
-//inicialización
-import express from "express";
-import config from "./config";
+const express = require('express');
+const morgan = require('morgan');
+const path = require('path');
+const routes = require('./routes/Usuarios.routes');
 
-import usuariosRoutes from "./routes/Usuarios.routes";
-const path = require(`path`);
 const app = express();
 
+// Configuracion (3)
+app.set('port', 3000);
+app.set('views', path.join(__dirname, '/views')); // ingresar al directorio de la carpeta views
+app.set('view engine', 'ejs'); // definiendo el motor de plantillas ejs
 
-//settings
-app.set("port", config.port);
+// middlewares (3)
+app.set(morgan('dev'));
+app.use(express.urlencoded( { extended : false } ));
+app.use(express.json());
 
-//motor de plantillas
-app.set('views', path.join(__dirname,"views"));
-app.set('view engine', 'ejs');
+// Cookies
 
-// invocamos a bcryptjs
-const bcryptjs = require('bcryptjs');
+// Rutas estaticas (1)
+app.use(express.static('src/public'));
 
-//Variables Globales
-app.use((req,res,next)=>{
-    next();
+// Rutas (1)
+app.use('/', routes);
+
+// Inicializar servidor
+app.listen(app.get('port'), () => {
+    console.log(`Servidor funcionando en el puerto ${app.get('port')}`);
 });
 
-//variables de session
-const session = require('express-session');
-app.use(session({
-    secret: 'Sapamo',
-    resave: true,
-    saveUninitialized: true
-}));
-
-//archivos estaticos public
-app.use(express.static(path.join(__dirname,"public")));
-app.use('/Css', express.static(__dirname + 'public/Css'));
-
-//middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: false}));
-
-//Rutas
-app.use(usuariosRoutes);
-
-export default app;
+module.exports = app;

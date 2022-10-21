@@ -1,23 +1,18 @@
-import sql from 'mssql';
+const mysql = require('mysql');
 
-const dbSettings = {
-    user: 'Tomas',
-    password: 'teamo',
-    server: 'localHost',
-    database: 'JALI2',
-    options: {
-        encrypt: true,
-        trustServerCertificate: true,
-    },
-};
+const connection = mysql.createConnection({
+    host    : 'localhost',
+    user    : 'root',
+    password: '300121',
+    database: 'jalimetters'
+});
 
-export const getConnection = async () => {
-    try {
-      const pool = await sql.connect(dbSettings);
-      return pool;
-    } catch (error) {
-      console.error(error);
+connection.connect((error) => {
+    if (error) {
+        console.log(`Hay error en la conexion: ${error}`);
+        return;
     }
-  };
-  
-  export { sql };
+    console.log('Conexion con la BD establecida');
+});
+
+module.exports = connection;
